@@ -10,7 +10,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: valyriadiscordapi
-  AZURE_WEBAPP_PACKAGE_PATH: 'build'
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
   DOTNET_VERSION: '6.0.201'
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
         run: |
           dotnet restore
           dotnet build src/Api/Api.csproj --configuration Release
-          dotnet publish src/Api/Api.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
+          dotnet publish src/Api/Api.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
 
   deploy:
     needs: build
@@ -54,4 +54,4 @@ jobs:
         with: 
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}
-          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
