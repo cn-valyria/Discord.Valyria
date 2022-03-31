@@ -12,7 +12,8 @@ await discord.LoginAsync(Discord.TokenType.Bot, builder.Configuration["token"]);
 builder.Services.AddRouting();
 builder.Services.AddSingleton(discord);
 builder.Services.AddInteractionService(config => config.UseCompiledLambda = true);
-// builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
