@@ -12,7 +12,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
 
     public NationModule(INationService nationService) => _nationService = nationService;
 
-    [SlashCommand(name: "search", description: "Attempts to find a single nation given a search parameter. If multiple matches are found then you can follow-up with the correct match")]
+    [SlashCommand(name: "search", description: "Attempts to find a single nation given a search parameter or nation ID")]
     public async Task Search(
         [Summary(name: "search-text", description: "Some text that should tie back to your nation. Currently supports: nation name, ruler name")] string searchText,
         [Summary(name: "nation-id", description: "The ID of the nation you want to find. Helpful if you don't want to deal with fuzzy searching")] int nationId = 0,
