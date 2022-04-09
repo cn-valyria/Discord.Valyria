@@ -12,6 +12,8 @@ await discord.LoginAsync(Discord.TokenType.Bot, builder.Configuration["token"]);
 builder.Services.AddRouting();
 builder.Services.AddSingleton(discord);
 builder.Services.AddInteractionService(config => config.UseCompiledLambda = true);
+builder.Services.AddGraphQL(builder.Configuration);
+builder.Services.AddDI();
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 

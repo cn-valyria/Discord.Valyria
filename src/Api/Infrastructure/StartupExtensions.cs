@@ -1,4 +1,8 @@
 using Discord.Interactions;
+using GraphQL.Client.Abstractions;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.SystemTextJson;
+using Repository.Services.Cybernations;
 
 namespace Api.Infrastructure;
 
@@ -12,6 +16,20 @@ public static class StartupExtensions
 
         services.AddSingleton(config);
         services.AddSingleton<InteractionService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddGraphQL(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IGraphQLClient>(s => new GraphQLHttpClient(configuration["stats_api_url"], new SystemTextJsonSerializer()));
+
+        return services;
+    }
+
+    public static IServiceCollection AddDI(this IServiceCollection services)
+    {
+        services.AddScoped<INationService, NationService>();
 
         return services;
     }

@@ -8,7 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.4.1" />
+    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="4.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Entities\Entities.csproj" />
   </ItemGroup>
 
 </Project>
