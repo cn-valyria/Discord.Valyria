@@ -22,7 +22,7 @@ public static class StartupExtensions
 
     public static IServiceCollection AddGraphQL(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IGraphQLClient>(s => new GraphQLHttpClient("https://valyria-api-stats.azurewebsites.net/api/graphql", new SystemTextJsonSerializer()));
+        services.AddSingleton<IGraphQLClient>(s => new GraphQLHttpClient(configuration["stats_api_url"], new SystemTextJsonSerializer()));
 
         return services;
     }
