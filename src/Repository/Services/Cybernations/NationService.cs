@@ -1,5 +1,6 @@
 using Entities;
 using GraphQL.Client.Abstractions;
+using Repository.Services.Cybernations.Contracts;
 
 namespace Repository.Services.Cybernations;
 
@@ -26,8 +27,8 @@ query getNationQuery($nationId: ID) {
   }
 }";
 
-        var response = await _valyriaApiClient.SendQueryAsync<Nation>(query, new { nationId });
-        return response.Data;
+        var response = await _valyriaApiClient.SendQueryAsync<GetNationQuery>(query, new { nationId });
+        return response.Data.GetNation;
     }
 
     public async Task<IEnumerable<Nation>> SearchNationsAsync(string searchText)
@@ -54,7 +55,7 @@ query searchNationQuery($searchText: String) {
   }
 }";
 
-        var response = await _valyriaApiClient.SendQueryAsync<IEnumerable<Nation>>(query, new { searchText }); // TODO: Use wrapper class
-        return response.Data;
+        var response = await _valyriaApiClient.SendQueryAsync<SearchNationsQuery>(query, new { searchText }); // TODO: Use wrapper class
+        return response.Data.SearchNations.Results;
     }
 }

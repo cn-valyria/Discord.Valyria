@@ -22,7 +22,10 @@ public static class StartupExtensions
 
     public static IServiceCollection AddGraphQL(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IGraphQLClient>(s => new GraphQLHttpClient(configuration["stats_api_url"], new SystemTextJsonSerializer()));
+        services.AddSingleton<IGraphQLClient>(s => new GraphQLHttpClient(configuration["stats_api_url"], new SystemTextJsonSerializer(options => 
+        {
+            options.PropertyNameCaseInsensitive = true;
+        })));
 
         return services;
     }
