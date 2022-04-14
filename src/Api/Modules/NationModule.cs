@@ -9,8 +9,10 @@ namespace Api.Modules;
 public class NationModule : RestInteractionModuleBase<RestInteractionContext>
 {
     private readonly INationService _nationService;
+    private readonly ILogger<NationModule> _logger;
 
-    public NationModule(INationService nationService) => _nationService = nationService;
+    public NationModule(INationService nationService, ILogger<NationModule> logger) 
+        => (_nationService, _logger) = (nationService, logger);
 
     [SlashCommand(name: "search", description: "Attempts to find a single nation given a search parameter or nation ID")]
     public async Task Search(
@@ -19,7 +21,11 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
         [Summary(name: "ephemeral", description: "Determines whether the results are only visible to you (true) or visible to everyone (false)")] bool ephemeral = false
     )
     {
+        _logger.LogInformation("NationModule command Search executed with parameters: {search-text}, {nation-id}, {ephemeral}", searchText, nationId, ephemeral);
+
         var nation = await QueryNation();
+        _logger.LogInformation("Found nation in search: {nation}", nation);
+
         if (nation is null)
             return;
 
@@ -32,6 +38,8 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
             else 
             {
                 var searchResults = await _nationService.SearchNationsAsync(searchText);
+                _logger.LogInformation("Search returned {resultCount} search results", searchResults.Count());
+
                 if (searchResults.Count() == 1)
                     return searchResults.First();
 
