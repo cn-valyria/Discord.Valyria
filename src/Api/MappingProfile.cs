@@ -22,5 +22,19 @@ public class MappingProfile : Profile
                 .WithCurrentTimestamp()
                 .Build();
         });
+
+        CreateMap<IEnumerable<Nation>, Embed>().ConvertUsing((src, dest) => 
+        {
+            var embedBuilder = new EmbedBuilder()
+                .WithTitle("Multiple nations found!")
+                .WithDescription($"The search returned the following {src.Count()} nations. Please search again with the specific ruler/nation name for more data on the desired nation.")
+                .WithColor(Color.Blue)
+                .WithCurrentTimestamp();
+
+            foreach (var nation in src)
+                embedBuilder.AddField($"{nation.RulerName} of {nation.Name} ({nation.Id})", $"Alliance: {(nation.Alliance?.Name ?? "None")}, NS: {nation.Strength}");
+            
+            return embedBuilder.Build();
+        });
     }
 }

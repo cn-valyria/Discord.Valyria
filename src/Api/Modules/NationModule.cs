@@ -28,7 +28,16 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
         [Summary(name: "ephemeral", description: "Determines whether the results are only visible to you (true) or visible to everyone (false)")] bool ephemeral = false
     )
     {
-        _logger.LogInformation("NationModule command Search executed with parameters: {search-text}, {nation-id}, {ephemeral}", searchText, nationId, ephemeral);
+        _logger.LogInformation("NationModule command Search executed with parameters: {searchText}, {nationId}, {ephemeral}", searchText, nationId, ephemeral);
+
+        try 
+        {
+            await DeferAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "DeferAsync threw an exception");
+        }
 
         var nation = await QueryNation();
         _logger.LogInformation("Found nation in search: {nation}", nation);
@@ -50,7 +59,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
                 if (searchResults.Count() == 1)
                     return searchResults.First();
 
-                await FollowupAsync("Search returned too many nations. Please try again");
+                await FollowupAsync(embed: _mapper.Map<Embed>(searchResults));
                 return null;
             }
         }
