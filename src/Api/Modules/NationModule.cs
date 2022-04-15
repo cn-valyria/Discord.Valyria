@@ -1,3 +1,5 @@
+using AutoMapper;
+using Discord;
 using Discord.Interactions;
 using Discord.Rest;
 using Entities;
@@ -9,10 +11,15 @@ namespace Api.Modules;
 public class NationModule : RestInteractionModuleBase<RestInteractionContext>
 {
     private readonly INationService _nationService;
+    private readonly IMapper _mapper;
     private readonly ILogger<NationModule> _logger;
 
-    public NationModule(INationService nationService, ILogger<NationModule> logger) 
-        => (_nationService, _logger) = (nationService, logger);
+    public NationModule(INationService nationService, IMapper mapper, ILogger<NationModule> logger)
+    {
+        _nationService = nationService;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
     [SlashCommand(name: "search", description: "Attempts to find a single nation given a search parameter or nation ID")]
     public async Task Search(
@@ -29,7 +36,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
         if (nation is null)
             return;
 
-        await RespondAsync($"Found nation {nation.Id}, name {nation.Name}, ruler {nation.RulerName}, at {nation.Strength} NS");
+        await RespondAsync(embed: _mapper.Map<Embed>(nation));
 
         async Task<Nation?> QueryNation()
         {
