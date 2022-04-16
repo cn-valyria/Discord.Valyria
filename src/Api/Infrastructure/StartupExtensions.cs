@@ -1,8 +1,9 @@
 using Discord.Interactions;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.SystemTextJson;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Repository.Services.Cybernations;
+using Repository.Services.Cybernations.Infrastructure;
 
 namespace Api.Infrastructure;
 
@@ -22,9 +23,12 @@ public static class StartupExtensions
 
     public static IServiceCollection AddGraphQL(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IGraphQLClient>(s => new GraphQLHttpClient(configuration["stats_api_url"], new SystemTextJsonSerializer(options => 
+        services.AddSingleton<IGraphQLClient>(s => new GraphQLHttpClient(configuration["stats_api_url"], new NewtonsoftJsonSerializer(settings => 
         {
-            options.PropertyNameCaseInsensitive = true;
+            foreach (var converter in settings.Converters.OfType<ConstantCaseEnumConverter>().ToList())
+                settings.Converters.Remove(converter);
+
+            settings.Converters.Add(new GraphQLEnumConverter());
         })));
 
         return services;

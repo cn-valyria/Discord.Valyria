@@ -1,10 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.SystemTextJson;
 using Repository.Services.Cybernations;
 using System.Threading.Tasks;
 using System.Linq;
+using Repository.Services.Cybernations.Infrastructure;
+using GraphQL.Client.Serializer.Newtonsoft;
 
 namespace Repository.Tests.Integration;
 
@@ -16,9 +16,12 @@ public class NationServiceTests
     [TestInitialize]
     public void Initialize()
     {
-        var graphQlClient = new GraphQLHttpClient("https://valyria-api-stats.azurewebsites.net/api/graphql", new SystemTextJsonSerializer(options => 
+        var graphQlClient = new GraphQLHttpClient("https://valyria-api-stats.azurewebsites.net/api/graphql", new NewtonsoftJsonSerializer(settings => 
         {
-            options.PropertyNameCaseInsensitive = true;
+            foreach (var converter in settings.Converters.OfType<ConstantCaseEnumConverter>().ToList())
+                settings.Converters.Remove(converter);
+
+            settings.Converters.Add(new GraphQLEnumConverter());
         }));
 
         _target = new NationService(graphQlClient);

@@ -21,9 +21,22 @@ query getNationQuery($nationId: ID) {
     alliance {
       name
     },
+    allianceDate,
     strength,
     infrastructure,
-    technology
+    technology,
+    baseLand,
+    created,
+    recentActivity,
+    governmentType,
+    religion,
+    defcon,
+    warStatus,
+    team,
+    baseSoldiers,
+    tanks,
+    cruiseMissiles,
+    nukes
   }
 }";
 
@@ -48,9 +61,22 @@ query searchNationQuery($searchText: String) {
       alliance {
         name
       },
+      allianceDate,
       strength,
       infrastructure,
-      technology
+      technology,
+      baseLand,
+      created,
+      recentActivity,
+      governmentType,
+      religion,
+      defcon,
+      warStatus,
+      team,
+      baseSoldiers,
+      tanks,
+      cruiseMissiles,
+      nukes
     }
   }
 }";

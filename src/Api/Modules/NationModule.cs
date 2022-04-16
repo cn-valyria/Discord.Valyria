@@ -32,7 +32,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
 
         try 
         {
-            await DeferAsync();
+            await DeferAsync(ephemeral: ephemeral);
         }
         catch (Exception e)
         {
@@ -45,7 +45,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
         if (nation is null)
             return;
 
-        await RespondAsync(embed: _mapper.Map<Embed>(nation));
+        await FollowupAsync(embed: _mapper.Map<Embed>(nation), ephemeral: ephemeral);
 
         async Task<Nation?> QueryNation()
         {
@@ -59,7 +59,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
                 if (searchResults.Count() == 1)
                     return searchResults.First();
 
-                await FollowupAsync(embed: _mapper.Map<Embed>(searchResults));
+                await FollowupAsync(embed: _mapper.Map<Embed>(searchResults), ephemeral: ephemeral);
                 return null;
             }
         }
