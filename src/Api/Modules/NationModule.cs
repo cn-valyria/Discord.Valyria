@@ -53,7 +53,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
                 return await _nationService.GetNationAsync(nationId);
             else 
             {
-                var searchResults = await _nationService.SearchNationsAsync(searchText);
+                var searchResults = await _nationService.SearchNationsByRulerOrNationAsync(searchText);
                 _logger.LogInformation("Search returned {resultCount} search results", searchResults.Count());
 
                 if (searchResults.Count() == 1)
@@ -80,9 +80,29 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
     [SlashCommand(name: "range", description: "Finds all nations that are in a list of alliances and in range of the provided nation")]
     public async Task NationsInRange(
         [Summary(name: "nation-id", description: "The NationID of the nation that you want to view history for")] int nationId,
-        [Summary(name: "alliance-names", description: "A list of alliance names that you want to search for targets in")] string allianceNames
+        [Summary(name: "alliance-name", description: "The alliance that you want to search for targets in")] string allianceName,
+        [Summary(name: "ephemeral", description: "Determines whether the results are only visible to you (true) or visible to everyone (false)")] bool ephemeral = false
     )
     {
-        await RespondAsync("This command is not implemented yet. Please ping @lilweirdward to finish developing this.");
+        _logger.LogInformation("NationModule command Range executed with parameters: {nationId}, {allianceName}", nationId, allianceName);
+
+        try 
+        {
+            await DeferAsync(ephemeral: ephemeral);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "DeferAsync threw an exception");
+        }
+
+        var nation = await _nationService.GetNationAsync(nationId);
+        if (nation is null || nation.Id is 0)
+        {
+            await FollowupAsync($"A valid nation was not found for the requested Nation ID. Please make sure that the ID is valid and try again.", ephemeral: ephemeral);
+            return;
+        }
+
+        var nationsInRange = await _nationService.SearchNationsInRangeAsync(allianceName, nation.Strength * 0.75m, nation.Strength * 1.33m);
+        await FollowupAsync(embed: _mapper.Map<Embed>(nationsInRange), ephemeral: ephemeral);
     }
 }

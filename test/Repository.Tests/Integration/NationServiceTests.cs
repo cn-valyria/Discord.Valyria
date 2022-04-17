@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Repository.Services.Cybernations.Infrastructure;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Repository.Services.Cybernations.Contracts;
 
 namespace Repository.Tests.Integration;
 
@@ -47,7 +48,7 @@ public class NationServiceTests
         const string lilweirdward = nameof(lilweirdward);
 
         // Act
-        var searchResults = await _target.SearchNationsAsync(lilweirdward);
+        var searchResults = await _target.SearchNationsByRulerOrNationAsync(lilweirdward);
 
         // Assert
         Assert.AreEqual(1, searchResults.Count());
@@ -61,9 +62,51 @@ public class NationServiceTests
         const string searchText = "lil";
 
         // Act
-        var searchResults = await _target.SearchNationsAsync(searchText);
+        var searchResults = await _target.SearchNationsByRulerOrNationAsync(searchText);
 
         // Assert
         Assert.IsTrue(searchResults.Count() > 1);
+    }
+
+    [TestMethod]
+    public async Task SearchNationsInRangeAsync_Works_For_Real_Alliance()
+    {
+        // Arrange
+        const string allianceName = "New Pacific Order";
+        const decimal baseStrength = 100000;
+
+        // Act
+        var nationsInRange = await _target.SearchNationsInRangeAsync(allianceName, baseStrength * 0.75m, baseStrength * 1.33m);
+
+        // Assert
+        Assert.IsTrue(nationsInRange.Count() > 1); // I assume this will never not be true as long as CN exists lol
+    }
+
+    [TestMethod]
+    public async Task SearchNationsInRangeAsync_Returns_Nothing_For_Garbage_AllianceName()
+    {
+        // Arrange
+        const string allianceName = "junk"; // Assume that no one will ever create an alliance with this name lol
+        const decimal baseStrength = 100000;
+
+        // Act
+        var nationsInRange = await _target.SearchNationsInRangeAsync(allianceName, baseStrength * 0.75m, baseStrength * 1.33m);
+
+        // Assert
+        Assert.IsTrue(nationsInRange.Count() == 0);
+    }
+
+    [TestMethod]
+    public async Task SearchNationsInRangeAsync_Returns_Nothing_For_Impossible_Range()
+    {
+        // Arrange
+        const string allianceName = "New Pacific Order";
+        const decimal baseStrength = 1; // TODO: Actually this test should still return nations by rank, but /shrug
+
+        // Act
+        var nationsInRange = await _target.SearchNationsInRangeAsync(allianceName, baseStrength * 0.75m, baseStrength * 1.33m);
+
+        // Assert
+        Assert.IsTrue(nationsInRange.Count() == 0);
     }
 }
