@@ -1,5 +1,4 @@
-using AutoMapper;
-using Discord;
+using Api.Helpers;
 using Discord.Interactions;
 using Discord.Rest;
 using Entities;
@@ -11,13 +10,11 @@ namespace Api.Modules;
 public class NationModule : RestInteractionModuleBase<RestInteractionContext>
 {
     private readonly INationService _nationService;
-    private readonly IMapper _mapper;
     private readonly ILogger<NationModule> _logger;
 
-    public NationModule(INationService nationService, IMapper mapper, ILogger<NationModule> logger)
+    public NationModule(INationService nationService, ILogger<NationModule> logger)
     {
         _nationService = nationService;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -45,7 +42,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
         if (nation is null)
             return;
 
-        await FollowupAsync(embed: _mapper.Map<Embed>(nation), ephemeral: ephemeral);
+        await FollowupAsync(embed: nation.ToNationSearchSingleResultEmbed(), ephemeral: ephemeral);
 
         async Task<Nation?> QueryNation()
         {
@@ -59,7 +56,7 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
                 if (searchResults.Count() == 1)
                     return searchResults.First();
 
-                await FollowupAsync(embed: _mapper.Map<Embed>(searchResults), ephemeral: ephemeral);
+                await FollowupAsync(embed: searchResults.ToNationSearchMultipleResultsEmbed(), ephemeral: ephemeral);
                 return null;
             }
         }
@@ -103,6 +100,6 @@ public class NationModule : RestInteractionModuleBase<RestInteractionContext>
         }
 
         var nationsInRange = await _nationService.SearchNationsInRangeAsync(allianceName, nation.Strength * 0.75m, nation.Strength * 1.33m);
-        await FollowupAsync(embed: _mapper.Map<Embed>(nationsInRange), ephemeral: ephemeral);
+        await FollowupAsync(embed: nationsInRange.ToNationsInRangeEmbed(nation, allianceName), ephemeral: ephemeral);
     }
 }

@@ -15,7 +15,6 @@ builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddRouting();
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddGraphQL(builder.Configuration);
 builder.Services.AddDI();
 
