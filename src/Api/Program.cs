@@ -33,6 +33,7 @@ var commands = app.Services.GetRequiredService<InteractionService>();
 
 await commands.AddModulesAsync(Assembly.GetExecutingAssembly(), app.Services);
 await commands.RegisterCommandsToGuildAsync(app.Configuration.GetValue<ulong>("ccc_guild"));
+await commands.RegisterCommandsToGuildAsync(app.Configuration.GetValue<ulong>("rfd_guild"));
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
